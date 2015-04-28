@@ -1,0 +1,15 @@
+# Ansible playbook. Starts a backup server in the Amazon EC2 cloud.
+
+- name: Amazon EC2 cloud backup
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  tasks:
+    - name: Start the backup instance
+      ec2:
+        instance_ids: '{{ ec2backup.instance_id }}'
+        region: '{{ ec2backup.region }}'
+        state: running
+        wait: True
+        aws_access_key: '{{ ec2backup.access_key }}'
+        aws_secret_key: '{{ ec2backup.secret_key }}'

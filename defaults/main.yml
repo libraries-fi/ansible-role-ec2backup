@@ -1,0 +1,3 @@
+---
+# defaults file for kifi.ec2backup
+ec2backup_playbook_dir: /opt/ec2backup

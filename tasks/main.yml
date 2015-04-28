@@ -1,0 +1,42 @@
+---
+# tasks file for kifi.ec2backup
+
+- name: Install pip
+  apt:
+    pkg=python-pip
+    state=present
+    update_cache=yes
+    cache_valid_time={{APT_CACHE_VALID_TIME}}
+
+- name: Install boto
+  pip:
+    name=boto
+    state=present
+
+- name: Create ec2backup group
+  group: name=ec2backup state=present
+
+- name: Create ec2backup user
+  user: >
+    name=ec2backup group=ec2backup state=present
+    comment="Amazon EC2 cloud backup"
+
+- name: Ensure ec2backup dir exists
+  file: >
+    path={{ ec2backup_playbook_dir }} state=directory
+    owner=ec2backup group=ec2backup mode=0500
+
+- name: Install a playbook for starting the backup server
+  template: >
+    src=ec2backup.yml.j2 dest={{ ec2backup_playbook_dir }}/ec2backup.yml
+    owner=ec2backup group=ec2backup mode=0400
+    
+- name: Install a script for running the playbook
+  template: >
+    src=ec2backup.sh.j2 dest={{ ec2backup_playbook_dir }}/ec2backup.sh
+    owner=ec2backup group=ec2backup mode=0500
+
+- name: Schedule the script to be run daily using cron
+  template: >
+    src=ec2backup-cronjob.j2 dest=/etc/cron.d/ec2backup
+    owner=root group=root mode=0755
