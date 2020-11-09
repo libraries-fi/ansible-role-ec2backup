@@ -1,12 +1,14 @@
 ---
 # tasks file for kifi.ec2backup
 
-- name: Install pip
+- name: Install setuptools and pip
   apt:
-    pkg=python-pip
-    state=present
-    update_cache=yes
-    cache_valid_time={{APT_CACHE_VALID_TIME}}
+    pkg:
+      - python-setuptools
+      - python-pip
+    state: present
+    update_cache: yes
+    cache_valid_time: "{{ APT_CACHE_VALID_TIME }}"
 
 - name: Install boto
   pip:
@@ -30,7 +32,7 @@
   template: >
     src=ec2backup.yml.j2 dest={{ ec2backup_playbook_dir }}/ec2backup.yml
     owner=ec2backup group=ec2backup mode=0400
-    
+
 - name: Install a script for running the playbook
   template: >
     src=ec2backup.sh.j2 dest={{ ec2backup_playbook_dir }}/ec2backup.sh
